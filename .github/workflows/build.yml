@@ -10,19 +10,22 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      # 第一步：用 JDK 17 初始化 Android SDK（sdkmanager 强制要求 JDK 17+）
+      # 先用 JDK 17 满足 sdkmanager 的硬性要求
       - name: Set up JDK 17 (for Android SDK setup)
         uses: actions/setup-java@v4
         with:
           java-version: '17'
           distribution: 'temurin'
 
+      # v4 已修复 'tools' 包缺失问题，packages: '' 进一步确保不装默认包
       - name: Setup Android SDK
-        uses: android-actions/setup-android@v3
+        uses: android-actions/setup-android@v4
+        with:
+          packages: '' # 跳过默认的 platform-tools，避免潜在冲突
         env:
           SKIP_JDK_VERSION_CHECK: true
 
-      # 第二步：切回 JDK 11 用于 Gradle 构建（兼容 2021 年的老项目）
+      # 切回 JDK 11 用于 Gradle 构建（老项目兼容性更好）
       - name: Set up JDK 11 (for Gradle build)
         uses: actions/setup-java@v4
         with:
